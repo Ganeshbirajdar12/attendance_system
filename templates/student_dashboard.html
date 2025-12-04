@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - SAMS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>SAMS</h2>
+        <a href="#" class="active">Dashboard</a>
+        <a href="#" action>My Attendance</a>
+        <a href="#">Subjects</a>
+        <a href="#">Notifications</a>
+        <a href="#">Profile</a>
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+
+    <!-- Main Section -->
+    <div class="main">
+
+        <!-- Header -->
+        <div class="header">
+            <h2>Welcome, Student</h2>
+            <div class="user-info">
+                <span>Ganesh</span>
+                <img src="https://via.placeholder.com/40" class="user-pic">
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="cards">
+            <div class="card green">
+                <h3>92%</h3>
+                <p>DBMS Attendance</p>
+            </div>
+            <div class="card orange">
+                <h3>78%</h3>
+                <p>DSA Attendance</p>
+            </div>
+            <div class="card green">
+                <h3>100%</h3>
+                <p>Python Attendance</p>
+            </div>
+            <div class="card red">
+                <h3>65%</h3>
+                <p>Maths Attendance</p>
+            </div>
+        </div>
+
+        <!-- Attendance Chart -->
+        <div class="chart-section">
+            <h3>Attendance Chart</h3>
+            <canvas id="attendanceChart"></canvas>
+        </div>
+
+        <!-- Subjects Table -->
+        <div class="table-section">
+            <h3>Subjects Attendance</h3>
+            <table>
+                <tr>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                    <th>Attendance %</th>
+                </tr>
+                <tr>
+                    <td>DBMS</td>
+                    <td>Prof. Sharma</td>
+                    <td>92%</td>
+                </tr>
+                <tr>
+                    <td>DSA</td>
+                    <td>Prof. Mehta</td>
+                    <td>78%</td>
+                </tr>
+                <tr>
+                    <td>Python</td>
+                    <td>Prof. Rao</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td>Maths</td>
+                    <td>Prof. Patel</td>
+                    <td>65%</td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/js/script.js"></script>
+</body>
+</html>

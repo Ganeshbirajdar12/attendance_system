@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Attendance Management System</title>
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+</head>
+<body>
+    <header>Student Attendance Management System</header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Get Started</h2>
+
+            <a href="/student/login" class="btn">
+                <i class="fas fa-user-graduate icon"></i>
+                Student Login
+            </a>
+
+            <a href="/teacher/login" class="btn">
+                <i class="fas fa-chalkboard-teacher icon"></i>
+                Teacher Login
+            </a>
+        </div>
+    </div>
+</body>
+</html>

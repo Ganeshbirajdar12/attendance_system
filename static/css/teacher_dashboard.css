@@ -1,0 +1,125 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6fa;
+}
+
+.sidebar {
+    width: 230px;
+    height: 100vh;
+    background: #4c7cf3;
+    padding: 20px;
+    position: fixed;
+    color: white;
+}
+
+.sidebar h2 {
+    margin-bottom: 30px;
+}
+
+.sidebar a {
+    display: block;
+    margin: 15px 0;
+    color: #fff;
+    text-decoration: none;
+    font-size: 17px;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.sidebar a:hover,
+.sidebar .active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.logout {
+    margin-top: 40px;
+    background: #ff4d4d !important;
+}
+
+.main {
+    margin-left: 250px;
+    padding: 30px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.content {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.card {
+    width: 200px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.card h3 {
+    margin-bottom: 10px;
+}
+
+.attendance-section {
+    margin-top: 40px;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    display: none;
+}
+
+.attendance-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.attendance-section th, .attendance-section td {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background: #4c7cf3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn.cancel {
+    background: #888;
+}
+
+/* Popup Add Student */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+}
+
+.popup-content {
+    width: 350px;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+    margin: 120px auto;
+}
+
+.popup-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+
