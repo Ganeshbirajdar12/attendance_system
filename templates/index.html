@@ -6,25 +6,37 @@
     <title>Student Attendance Management System</title>
      <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
 </head>
 <body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" class="main-logo">
+        </div>
+        <ul class="nav-links">
+            <li><a href="/student_login.html">Student Login</a></li>
+            <li><a href="/teacher_login.html">Teacher Login</a></li>
+            <li><a href="#">Admin Login</a></li>
+        </ul>
+    </nav>
+
     <header>Student Attendance Management System</header>
 
-    <div class="container">
-        <div class="card">
-            <h2>Get Started</h2>
+    <!-- About Section -->
+    <section class="about">
+        <h2>About the Student Attendance Management System</h2>
+        <p>
+            This system helps schools and colleges manage student attendance digitally.
+            Teachers can easily mark attendance, students can check their records,
+            and admins can monitor overall activity. It reduces paperwork and
+            improves accuracy.
+        </p>
+        <img src="{{ url_for('static', filename='images/campus.png') }}" class="about-img">
+        
+    </section>
 
-            <a href="/student/login" class="btn">
-                <i class="fas fa-user-graduate icon"></i>
-                Student Login
-            </a>
+    
 
-            <a href="/teacher/login" class="btn">
-                <i class="fas fa-chalkboard-teacher icon"></i>
-                Teacher Login
-            </a>
-        </div>
-    </div>
 </body>
 </html>
