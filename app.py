@@ -3,14 +3,14 @@ import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevelopmentConfig
 
-app = Flask(__name__)
-app.config.from_object(DevelopmentConfig)
-
 app = Flask(
     __name__,
     static_folder="static",
     template_folder="templates"
 )
+app.config.from_object(DevelopmentConfig)
+app.secret_key = "your_secret_key"
+
 
 app.secret_key = "your_secret_key"
 
@@ -79,8 +79,57 @@ def teacher_login():
 
     return render_template("teacher_login.html")
 
+#====================================== admin auth ======================================
+@app.route("/admin/auth")
+def admin_auth_page():
+    return render_template("admin_auth.html")
 
+@app.route("/admin/register", methods=["POST"])
+def admin_register():
+    username = request.form.get("username")
+    email = request.form.get("email")
+    password = request.form.get("password")
+    confirm_password = request.form.get("confirm_password")
 
+    if password != confirm_password:
+        return render_template("admin_auth.html", register_error="Passwords do not match")
+
+    hashed_password = generate_password_hash(password)
+
+    db = get_db_connection()
+    cursor = db.cursor()
+    try:
+        cursor.execute(
+            "INSERT INTO admin_auth (username, email, password) VALUES (%s, %s, %s)",
+            (username, email, hashed_password)
+        )
+        db.commit()
+    except mysql.connector.IntegrityError:
+        cursor.close()
+        db.close()
+        return render_template("admin_auth.html", register_error="Username or email already taken")
+
+    cursor.close()
+    db.close()
+    return render_template("admin_auth.html", register_success="Registration successful! Please log in.")
+
+@app.route("/admin/login", methods=["POST"])
+def admin_login():
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM admin_auth WHERE username=%s", (username,))
+    admin = cursor.fetchone()
+    cursor.close()
+    db.close()
+
+    if admin and check_password_hash(admin["password"], password):
+        session["admin_id"] = admin["id"]
+        return redirect("/admin/dashboard")
+
+    return render_template("admin_auth.html", login_error="Invalid username or password")
 
 
 # ================== DASHBOARDS ==================
@@ -144,26 +193,31 @@ def add_student():
     return redirect("/teacher/dashboard")
 
 # ================== VIEW ATTENDANCE  ===============
-@app.route("/teacher/view_attendance")
-def view_attendance():
-    if "teacher_id" not in session:
-        return redirect("/teacher/login")
-
+@app.route("/view_attendance/<roll_no>")
+def view_attendance(roll_no):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
+
+    # Get student info
+    cursor.execute("SELECT * FROM student WHERE roll_no=%s", (roll_no,))
+    student = cursor.fetchone()
+
+    if not student:
+        return "Student not found"
+
+    # Get attendance of this student
     cursor.execute("""
-        SELECT students.name, students.roll, attendance.date, attendance.status
-        FROM attendance 
-        JOIN students ON attendance.student_id = students.id
-        ORDER BY attendance.date DESC
-    """)
-    records = cursor.fetchall()
+        SELECT date, status 
+        FROM attendance
+        WHERE student_id = %s
+        ORDER BY date DESC
+    """, (student['id'],))
+    attendance = cursor.fetchall()
+
     cursor.close()
     db.close()
 
-    return render_template("teacher_attendance.html", records=records)
-
-
+    return render_template("view_attendance.html",student=student,attendance=attendance)
 
 
 
@@ -180,3 +234,19 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+# ================== ADMIN LOGIN ==================
+@app.route("/admin/auth", methods=["GET", "POST"])
+def admin_auth():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        # Example static admin login
+        if username == "admin" and password == "admin123":
+            session["admin_id"] = 1
+            return redirect("/admin/dashboard")
+
+        return render_template("admin_login.html", error="Invalid credentials")
+
+    return render_template("admin_login.html")

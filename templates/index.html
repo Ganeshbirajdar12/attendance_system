@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Attendance Management System</title>
-     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body>
 
     <!-- Navigation Bar -->
@@ -15,10 +17,12 @@
             <img src="{{ url_for('static', filename='images/logo.png') }}" class="main-logo">
         </div>
         <ul class="nav-links">
-            <li><a href="/student_login.html">Student Login</a></li>
-            <li><a href="/teacher_login.html">Teacher Login</a></li>
-            <li><a href="#">Admin Login</a></li>
+            <li><a href="/student/login">Student Login</a></li>
+            <li><a href="/teacher/login">Teacher Login</a></li>
+            <li><a href="/admin/auth">Admin Login</a></li>
         </ul>
+
+
     </nav>
 
     <header>Student Attendance Management System</header>
@@ -33,10 +37,11 @@
             improves accuracy.
         </p>
         <img src="{{ url_for('static', filename='images/campus.png') }}" class="about-img">
-        
+
     </section>
 
-    
+
 
 </body>
+
 </html>
