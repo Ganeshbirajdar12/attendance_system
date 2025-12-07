@@ -1,0 +1,58 @@
+    body {
+            height: 100vh;
+            background: linear-gradient(135deg, #a16be0, #ff6ec4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .auth-card {
+            width: 450px;
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+            animation: fadeIn 0.7s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-tabs .nav-link {
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #a14ccf !important;
+            border-bottom: 3px solid #a14ccf;
+            background: none !important;
+        }
+
+        .form-control {
+            height: 50px;
+            border-radius: 12px;
+            border: 1px solid #d7c9e9;
+        }
+
+        .form-control:focus {
+            border-color: #b066dd;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background: #a14ccf;
+            border: none;
+            height: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 12px;
+        }
+
+        .btn-primary:hover {
+            background: #8b39b7;
+        }

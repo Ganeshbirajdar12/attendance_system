@@ -20,7 +20,7 @@ def get_db_connection():
         host="localhost",
         user="root",
         password="root123",
-        database="attendance_system"
+        database="SAMS"
     )
 
 # ---------- ROUTES ----------
@@ -29,55 +29,138 @@ def index():
     return render_template("index.html")
 
 
-# ================== STUDENT LOGIN ==================
-@app.route("/student/login", methods=["GET", "POST"])
+# ================== STUDENT AUTH ==================
+
+@app.route("/student/auth")
+def student_auth_page():
+    return render_template("student_auth.html")
+
+
+@app.route("/student/register", methods=["POST"])
+def student_register():
+    roll_no = request.form["roll_no"]
+    name = request.form["name"]
+    username = request.form["username"]
+    password = request.form["password"]
+    program_id = request.form["program_id"]
+    class_id = request.form["class_id"]
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    # 1. Insert student into students table
+    cursor.execute("""
+        INSERT INTO students (roll_no, name, program_id, class_id)
+        VALUES (%s, %s, %s, %s)
+    """, (roll_no, name, program_id, class_id))
+
+    student_id = cursor.lastrowid
+
+    # 2. Insert login into student_auth table
+    cursor.execute("""
+        INSERT INTO student_auth (student_id, username, password_hash)
+        VALUES (%s, %s, %s)
+    """, (student_id, username, generate_password_hash(password)))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return redirect("/student/login")
+
+@app.route("/student/login", methods=["POST"])
 def student_login():
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-        
-        db = get_db_connection()
-        cursor = db.cursor(dictionary=True)
+    username = request.form["username"]
+    password = request.form["password"]
 
-        cursor.execute("SELECT * FROM student_auth WHERE email=%s", (email,))
-        user = cursor.fetchone()
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
 
-        cursor.close()
-        db.close()
+    cursor.execute("""
+        SELECT sa.*, s.name, s.roll_no
+        FROM student_auth sa
+        JOIN students s ON sa.student_id = s.id
+        WHERE sa.username = %s
+    """, (username,))
 
-        if user and user['password'] == password:
+    user = cursor.fetchone()
+    cursor.close()
+    db.close()
 
-            session['student_id'] = user['id']
-            session.permanent = True
-            return redirect("/student/dashboard")
+    if user and check_password_hash(user["password_hash"], password):
+        session["student_id"] = user["student_id"]
+        session["student_name"] = user["name"]
+        return "Student Login Successful!"
+    else:
+        return "Invalid username or password"
 
-        return render_template("student_login.html", error="Invalid Credentials")
-
-    return render_template("student_login.html")
 
 
-# ================== TEACHER LOGIN ==================
-@app.route("/teacher/login", methods=["GET", "POST"])
+
+# ================== TEACHER AUTH ==================
+@app.route("/teacher/auth")
+def teacher_auth_page():
+    return render_template("teacher_auth.html")
+
+
+@app.route("/teacher/register", methods=["POST"])
+def teacher_register():
+    name = request.form["name"]
+    email = request.form["email"]
+    username = request.form["username"]
+    password = request.form["password"]
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    # Insert teacher
+    cursor.execute("""
+        INSERT INTO teachers (name, email)
+        VALUES (%s, %s)
+    """, (name, email))
+
+    teacher_id = cursor.lastrowid
+
+    # Insert login
+    cursor.execute("""
+        INSERT INTO teacher_auth (teacher_id, username, password_hash)
+        VALUES (%s, %s, %s)
+    """, (teacher_id, username, generate_password_hash(password)))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return redirect("/teacher/login_page")
+
+@app.route("/teacher/login", methods=["POST"])
 def teacher_login():
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
+    username = request.form["username"]
+    password = request.form["password"]
 
-        db = get_db_connection()
-        cursor = db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM teachers WHERE email=%s", (email,))
-        user = cursor.fetchone()
-        db.close()
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
 
-        if user and user['password'] == password:
+    cursor.execute("""
+        SELECT ta.*, t.name, t.email
+        FROM teacher_auth ta
+        JOIN teachers t ON ta.teacher_id = t.id
+        WHERE ta.username = %s
+    """, (username,))
 
-            session['teacher_id'] = user['id']  # FIXED
-            session.permanent = True
-            return redirect("/teacher/dashboard")  # FIXED
+    user = cursor.fetchone()
+    cursor.close()
+    db.close()
 
-        return render_template("teacher_login.html", error="Invalid Credentials")
+    if user and check_password_hash(user["password_hash"], password):
+        session["teacher_id"] = user["teacher_id"]
+        session["teacher_name"] = user["name"]
+        return "Teacher Login Successful!"
+    else:
+        return "Invalid username or password"
+    
 
-    return render_template("teacher_login.html")
+
 
 #====================================== admin auth ======================================
 @app.route("/admin/auth")
@@ -199,7 +282,7 @@ def view_attendance(roll_no):
     cursor = db.cursor(dictionary=True)
 
     # Get student info
-    cursor.execute("SELECT * FROM student WHERE roll_no=%s", (roll_no,))
+    cursor.execute("SELECT * FROM students WHERE roll_no=%s", (roll_no,))
     student = cursor.fetchone()
 
     if not student:

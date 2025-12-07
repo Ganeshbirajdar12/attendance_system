@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Dashboard - SAMS</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='static/css/teacher_dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/teacher_dashboard.css') }}">
-    
+
 </head>
+
 <body>
 
     <!-- Sidebar -->
@@ -16,7 +18,13 @@
         <a href="#" class="active">Dashboard</a>
         <a href="#" id="addStudentBtn">Add Student</a>
         <a href="#" id="markAttendanceBtn">Mark Attendance</a>
-        <a href="{{ url_for('view_attendance') }}">View Attendance</a>
+        {% for student in students %}
+        <a href="{{ url_for('view_attendance', roll_no=students.roll_no) }}">
+            {{ student.name }} ({{ student.roll }})
+        </a>
+        {% endfor %}
+
+
         <a href="/logout" class="logout">Logout</a>
     </div>
 
@@ -89,4 +97,5 @@
     <script src="/static/js/teacher_dashboard.js"></script>
 
 </body>
+
 </html>
