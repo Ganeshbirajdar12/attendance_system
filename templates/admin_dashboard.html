@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+        .sidebar {
+            height: 100vh;
+            background: #343a40;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #ddd;
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background: #495057;
+            color: #fff;
+        }
+        .active-link {
+            background: #0d6efd !important;
+            color: #fff !important;
+        }
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        
+        <!-- Sidebar -->
+        <nav class="col-md-2 sidebar">
+            <h4 class="text-center text-light mb-4">Admin Panel</h4>
+            <a href="#" class="active-link">Dashboard</a>
+            <a href="/admin/add_teacher">Add Teachers</a>
+            <a href="/admin/add_program">Add Programs</a>
+            <a href="/admin/add_class">Add Class</a>
+            <a href="/admin/assign_class"> Assign Classes</a>
+            <a href="/admin/logout" class="text-danger">Logout</a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-10 content">
+
+            <h2 class="mb-4">Welcome, Admin</h2>
+
+            <div class="row">
+
+                <!-- Card 1 -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5>Add Teachers</h5>
+                            <p class="text-muted">Create and manage teacher accounts.</p>
+                            <a href="/admin/add_teacher" class="btn btn-primary">Go</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5>Add Programs</h5>
+                            <p class="text-muted">Add academic programs/courses.</p>
+                            <a href="/admin/add_program" class="btn btn-primary">Go</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5>Add Class</h5>
+                            <p class="text-muted">Create classes under programs.</p>
+                            <a href="/admin/add_class" class="btn btn-primary">Go</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5>Assign Classes</h5>
+                            <p class="text-muted">assign the classes to the students.</p>
+                            <a href="/admin/assign_class" class="btn btn-primary">Go</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5>Logout</h5>
+                            <p class="text-muted">End your session securely.</p>
+                            <a href="/admin/logout" class="btn btn-danger">Logout</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
