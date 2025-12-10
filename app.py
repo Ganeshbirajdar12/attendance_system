@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, flash, url_for
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevelopmentConfig
@@ -12,25 +12,26 @@ app.config.from_object(DevelopmentConfig)
 app.secret_key = "your_secret_key"
 
 
-app.secret_key = "your_secret_key"
-
 # ---------- DATABASE CONNECTION ----------
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",
         password="root123",
-        database="attendance_system"
+        database="attendance_system1"
     )
 
-# ---------- ROUTES ----------
+# ------------------------------------------
+#                 INDEX
+# ------------------------------------------
 @app.route("/")
 def index():
     return render_template("index.html")
 
 
-# ================== STUDENT AUTH ==================
-
+# ------------------------------------------
+#          STUDENT AUTHENTICATION
+# ------------------------------------------
 @app.route("/student/auth")
 def student_auth_page():
     return render_template("student_auth.html")
@@ -65,6 +66,7 @@ def student_register():
     db.close()
     return render_template("student_auth.html", register_success="Registration successful! Please log in.")
 
+
 @app.route("/student/login", methods=["POST"])
 def student_login():
     username = request.form.get("username")
@@ -78,84 +80,52 @@ def student_login():
     db.close()
 
     if student and check_password_hash(student["password"], password):
-        session["admin_id"] = student["id"]
+        session["student_id"] = student["id"]
         return redirect("/student/dashboard")
 
     return render_template("student_auth.html", login_error="Invalid username or password")
 
 
-
-
-
-# ================== TEACHER AUTH ==================
+# ------------------------------------------
+#           TEACHER AUTHENTICATION
+# ------------------------------------------
 @app.route("/teacher/auth")
 def teacher_auth_page():
     return render_template("teacher_auth.html")
 
-
-@app.route("/teacher/register", methods=["POST"])
-def teacher_register():
-    name = request.form["name"]
-    email = request.form["email"]
-    username = request.form["username"]
-    password = request.form["password"]
-
-    db = get_db_connection()
-    cursor = db.cursor()
-
-    # Insert teacher
-    cursor.execute("""
-        INSERT INTO teachers (name, email)
-        VALUES (%s, %s)
-    """, (name, email))
-
-    teacher_id = cursor.lastrowid
-
-    # Insert login
-    cursor.execute("""
-        INSERT INTO teacher_auth (teacher_id, username, password_hash)
-        VALUES (%s, %s, %s)
-    """, (teacher_id, username, generate_password_hash(password)))
-
-    db.commit()
-    cursor.close()
-    db.close()
-
-    return redirect("/teacher/login_page")
-
-@app.route("/teacher/login", methods=["POST"])
+@app.route("/teacher/login", methods=["GET", "POST"])
 def teacher_login():
-    username = request.form["username"]
-    password = request.form["password"]
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
 
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
+        db = get_db_connection()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM Teachers WHERE username = %s", (username,))
+        teacher = cursor.fetchone()
+        cursor.close()
+        db.close()
 
-    cursor.execute("""
-        SELECT ta.*, t.name, t.email
-        FROM teacher_auth ta
-        JOIN teachers t ON ta.teacher_id = t.id
-        WHERE ta.username = %s
-    """, (username,))
+        if teacher and check_password_hash(teacher["password"], password):
+           
+            session["teacher_id"] = teacher["id"]
+            session["teacher_name"] = teacher["name"]
+            return redirect("/teacher/dashboard")
+        else:
+           
+            return render_template("teacher_auth.html", login_error="Invalid username or password")
 
-    user = cursor.fetchone()
-    cursor.close()
-    db.close()
-
-    if user and check_password_hash(user["password_hash"], password):
-        session["teacher_id"] = user["teacher_id"]
-        session["teacher_name"] = user["name"]
-        return "Teacher Login Successful!"
-    else:
-        return "Invalid username or password"
-    
+   
+    return render_template("teacher_auth.html")
 
 
-
-#====================================== admin auth ======================================
+# ------------------------------------------
+#              ADMIN AUTHENTICATION
+# ------------------------------------------
 @app.route("/admin/auth")
 def admin_auth_page():
     return render_template("admin_auth.html")
+
 
 @app.route("/admin/register", methods=["POST"])
 def admin_register():
@@ -184,7 +154,8 @@ def admin_register():
 
     cursor.close()
     db.close()
-    return render_template("admin_auth.html", register_success="Registration successful! Please log in.")
+    return redirect(url_for('admin_auth_page', register_success='Registration successful! Please login.'))
+
 
 @app.route("/admin/login", methods=["POST"])
 def admin_login():
@@ -202,43 +173,49 @@ def admin_login():
         session["admin_id"] = admin["id"]
         return redirect("/admin/dashboard")
 
-    return render_template("admin_auth.html", login_error="Invalid username or password")
+    return redirect(url_for('admin_auth_page', login_error='Invalid username or password'))
 
 
-# ================== DASHBOARDS ==================
+# ------------------------------------------
+#                DASHBOARDS
+# ------------------------------------------
 @app.route("/student/dashboard")
 def student_dashboard():
     if 'student_id' not in session:
-        return redirect("/student/login")
+        return redirect("/student/auth")
     return render_template("student_dashboard.html")
-
 
 @app.route("/teacher/dashboard")
 def teacher_dashboard():
-    if 'teacher_id' not in session:
-        return redirect("/teacher/login")
-    return render_template("teacher_dashboard.html")
+    if "teacher_id" not in session:
+        return redirect("/teacher/auth")
+
+    return render_template("teacher_dashboard.html", name=session.get("teacher_name"))
+
+
 
 @app.route("/admin/dashboard")
 def admin_dashboard():
     if "admin_id" not in session:
-        return redirect("/admin/auth")   # Redirect if not logged in
-
+        return redirect("/admin/auth")
     return render_template("admin_dashboard.html")
 
-# ================== LONGOUTS ==================
+
 @app.route("/admin/logout")
 def admin_logout():
-    session.pop("admin_id", None)   # remove admin session
-    return redirect("/")  # go back to login page
+    session.pop("admin_id", None)
+    return redirect("/")
 
 
-# ===================add teachers =================================
+# ------------------------------------------
+#      ADMIN STATIC FORM PAGES
+# ------------------------------------------
 @app.route("/admin/add_teacher")
 def admin_add_teacher_page():
     if "admin_id" not in session:
         return redirect("/admin/auth")
     return render_template("add_teacher.html")
+
 
 @app.route("/admin/add_program")
 def admin_add_program_page():
@@ -246,11 +223,6 @@ def admin_add_program_page():
         return redirect("/admin/auth")
     return render_template("add_program.html")
 
-@app.route("/admin/add_class")
-def admin_add_class_page():
-    if "admin_id" not in session:
-        return redirect("/admin/auth")
-    return render_template("add_class.html")
 
 @app.route("/admin/assign_class")
 def admin_assign_class_page():
@@ -258,6 +230,115 @@ def admin_assign_class_page():
         return redirect("/admin/auth")
     return render_template("assign_class.html")
 
+
+# ------------------------------------------
+#              ADD PROGRAM
+# ------------------------------------------
+@app.route('/admin/add_program', methods=['POST'])
+def add_program():
+    program_name = request.form['program_name']
+    program_code = request.form['program_code']
+    duration = request.form['duration']
+    department = request.form['department']
+    description = request.form['description']
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        INSERT INTO Programs (program_name, program_code, duration, department, description)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (program_name, program_code, duration, department, description))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return redirect(url_for('admin_add_program_page', success='true'))
+
+
+# ------------------------------------------
+#              ADD CLASS 
+# ------------------------------------------
+@app.route('/admin/add_class', methods=['GET'])
+def show_add_class_form():
+    if "admin_id" not in session:
+        return redirect("/admin/auth")
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("SELECT program_name FROM Programs")
+    programs = cursor.fetchall()
+
+    cursor.execute("SELECT name FROM Teachers")
+    teachers = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return render_template('add_class.html', programs=programs, teachers=teachers)
+
+
+@app.route('/admin/add_class', methods=['POST'])
+def add_class():
+    class_name = request.form['class_name']
+    program = request.form['program']
+    year = request.form.get('year')
+    teacher = request.form.get('teacher')
+    division = request.form.get('division')
+    description = request.form.get('description')
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        INSERT INTO Classes (class_name, program, year, teacher, division, description)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (class_name, program, year, teacher, division, description))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return redirect(url_for('show_add_class_form', success='true'))
+
+
+# ------------------------------------------
+#          ADD TEACHER
+# ------------------------------------------
+@app.route('/admin/add_teacher', methods=['POST'])
+def add_teacher():
+    name = request.form['name']
+    email = request.form['email']
+    phone = request.form['phone']
+    username = request.form['username']
+    password = request.form['password']
+
+    hashed_password = generate_password_hash(password)
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        INSERT INTO Teachers (name, email, phone, username, password)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (name, email, phone, username, hashed_password))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return redirect(url_for('show_add_teacher_form', success='true'))
+
+
+@app.route('/admin/add_teacher', methods=['GET'])
+def show_add_teacher_form():
+    return render_template('add_teacher.html')
+
+
+# ------------------------------------------
+#                RUN APP
+# ------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True)
-

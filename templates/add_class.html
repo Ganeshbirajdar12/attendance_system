@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Class</title>
 
     <!-- Bootstrap 5 -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         body {
@@ -22,98 +23,111 @@
             padding: 25px;
             background: white;
             border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 
 <body>
+    
+    <div class="container">
+        <div class="form-container">
+            <h3 class="text-center mb-4">Add New Class</h3>
 
-<div class="container">
+            <form id="addClassForm" action="/admin/add_class" method="POST">
+                <!-- Class Name -->
+                <div class="mb-3">
+                    <label class="form-label">Class Name</label>
+                    <input type="text" name="class_name" class="form-control" required
+                        placeholder="e.g., FY-BCA, SY-BSc CS, TY-MCA">
+                </div>
 
-    <div class="form-container">
-        <h3 class="text-center mb-4">Add New Class</h3>
-
-        <form action="/admin/add_class" method="POST">
-
-            <!-- Class Name -->
-            <div class="mb-3">
-                <label class="form-label">Class Name</label>
-                <input type="text" name="class_name" class="form-control" required placeholder="e.g., FY-BCA, SY-BSc CS, TY-MCA">
-            </div>
-
-            <!-- Program -->
-            <div class="mb-3">
-                <label class="form-label">Program</label>
-                <select name="program" class="form-control" required>
-                    <option value="">Select Program</option>
-                    <option>BCA</option>
-                    <option>BSc CS</option>
-                    <option>BBA</option>
-                    <option>MCA</option>
-                    <option>MBA</option>
+                <!-- Program -->
+                <!-- Program Dropdown -->
+                <select name="program" class="form-select" required>
+                    <option value="">-- Select Program --</option>
+                    {% for p in programs %}
+                    <option value="{{ p.program_name }}">{{ p.program_name }}</option>
+                    {% endfor %}
                 </select>
-            </div>
 
-            <!-- Year / Semester -->
-            <div class="mb-3">
-                <label class="form-label">Year / Semester</label>
-                <select name="year" class="form-control">
-                    <option value="">Select</option>
-                    <option>1st Year</option>
-                    <option>2nd Year</option>
-                    <option>3rd Year</option>
-                    <option>Sem 1</option>
-                    <option>Sem 2</option>
-                    <option>Sem 3</option>
-                    <option>Sem 4</option>
-                    <option>Sem 5</option>
-                    <option>Sem 6</option>
+
+
+                <!-- Year / Semester -->
+                <div class="mb-3">
+                    <label class="form-label">Year / Semester</label>
+                    <select name="year" class="form-control">
+                        <option value="">Select</option>
+                        <option>1st Year</option>
+                        <option>2nd Year</option>
+                        <option>3rd Year</option>
+                        <option>Sem 1</option>
+                        <option>Sem 2</option>
+                        <option>Sem 3</option>
+                        <option>Sem 4</option>
+                        <option>Sem 5</option>
+                        <option>Sem 6</option>
+                    </select>
+                </div>
+
+
+
+                <!-- Teacher Dropdown -->
+                <select name="teacher" class="form-select" required>
+                    <option value="">-- Select Teacher --</option>
+                    {% for t in teachers %}
+                    <option value="{{ t.name }}">{{ t.name }}</option>
+                    {% endfor %}
                 </select>
-            </div>
 
-            <!-- Class Teacher -->
-            <div class="mb-3">
-                <label class="form-label">Class Teacher</label>
-                <select name="teacher" class="form-control">
-                    <option value="">Select Teacher</option>
-                    <option>Ganesh Birajdar</option>
-                    <option>Rohit Patil</option>
-                    <option>Priya Kulkarni</option>
-                    <option>Shreya More</option>
-                </select>
-            </div>
 
-            <!-- Section / Division -->
-            <div class="mb-3">
-                <label class="form-label">Section / Division</label>
-                <input type="text" name="division" class="form-control" placeholder="e.g., A, B, C">
-            </div>
+                <!-- Section / Division -->
+                <div class="mb-3">
+                    <label class="form-label">Section / Division</label>
+                    <input type="text" name="division" class="form-control" placeholder="e.g., A, B, C">
+                </div>
 
-            <!-- Description -->
-            <div class="mb-3">
-                <label class="form-label">Class Description</label>
-                <textarea name="description" class="form-control" rows="4" placeholder="Optional: Write class info or notes"></textarea>
-            </div>
+                <!-- Description -->
+                <div class="mb-3">
+                    <label class="form-label">Class Description</label>
+                    <textarea name="description" class="form-control" rows="4"
+                        placeholder="Optional: Write class info or notes"></textarea>
+                </div>
 
-            <!-- Submit -->
-            <button type="submit" class="btn btn-primary w-100 mt-3">
-                Add Class
-            </button>
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary w-100 mt-3">Add Class</button>
+            </form>
 
-        </form>
-
-        <!-- Back Button -->
-        <a href="/admin/dashboard" class="btn btn-secondary w-100 mt-3">
-            Back to Dashboard
-        </a>
-
+            <!-- Back Button -->
+            <a href="/admin/dashboard" class="btn btn-secondary w-100 mt-3">Back to Dashboard</a>
+        </div>
     </div>
 
-</div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show SweetAlert success message if URL contains success=true
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success') === 'true') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Class Added!',
+                    text: 'The class was added successfully.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        });
+
+        // Optional: disable submit button after form submit to prevent double submission
+        const form = document.getElementById('addClassForm');
+        form.addEventListener('submit', () => {
+            form.querySelector('button[type="submit"]').disabled = true;
+        });
+    </script>
 
 </body>
+
 </html>

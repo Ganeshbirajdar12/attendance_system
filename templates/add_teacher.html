@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Teacher</title>
 
     <!-- Bootstrap 5 -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         body {
@@ -22,95 +23,87 @@
             padding: 25px;
             background: #fff;
             border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
+        <div class="form-container">
+            <h3 class="text-center mb-4">Add New Teacher</h3>
 
-    <div class="form-container">
-        <h3 class="text-center mb-4">Add New Teacher</h3>
+            <form id="addTeacherForm" action="/admin/add_teacher" method="POST">
 
-        <form action="/admin/add_teacher" method="POST">
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-control" required placeholder="Enter teacher full name">
+                </div>
 
-            <!-- Full Name -->
-            <div class="mb-3">
-                <label class="form-label">Full Name</label>
-                <input type="text" name="name" class="form-control" required placeholder="Enter teacher full name">
-            </div>
+                <!-- Email -->
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="email" class="form-control" required placeholder="Enter email">
+                </div>
 
-            <!-- Email -->
-            <div class="mb-3">
-                <label class="form-label">Email Address</label>
-                <input type="email" name="email" class="form-control" required placeholder="Enter email">
-            </div>
+                <!-- Phone -->
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" name="phone" class="form-control" required placeholder="Enter phone number">
+                </div>
 
-            <!-- Phone -->
-            <div class="mb-3">
-                <label class="form-label">Phone Number</label>
-                <input type="text" name="phone" class="form-control" required placeholder="Enter phone number">
-            </div>
+                <!-- Username -->
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" required placeholder="Enter login username">
+                </div>
 
-            <!-- Username -->
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" name="username" class="form-control" required placeholder="Enter login username">
-            </div>
+                <!-- Password -->
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" required placeholder="Enter password">
+                </div>
+                
 
-            <!-- Password -->
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required placeholder="Enter password">
-            </div>
 
-            <!-- Program Selection -->
-            <div class="mb-3">
-                <label class="form-label">Assign Program</label>
-                <select name="program_id" class="form-control" required>
-                    <option value="">Select Program</option>
 
-                    <!-- Example; replace with dynamic options -->
-                    <option value="1">BCA</option>
-                    <option value="2">BSc CS</option>
-                    <option value="3">MCA</option>
 
-                </select>
-            </div>
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary w-100 mt-3">Add Teacher</button>
+            </form>
 
-            <!-- Class Selection -->
-            <div class="mb-3">
-                <label class="form-label">Assign Class</label>
-                <select name="class_id" class="form-control" required>
-                    <option value="">Select Class</option>
-
-                    <!-- Example; replace dynamically -->
-                    <option value="101">FY-BCA</option>
-                    <option value="102">SY-BCA</option>
-                    <option value="103">TY-BCA</option>
-
-                </select>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100 mt-3">
-                Add Teacher
-            </button>
-        </form>
-
-        <!-- Back Button -->
-        <a href="/admin/dashboard" class="btn btn-secondary w-100 mt-3">
-            Back to Dashboard
-        </a>
-
+            <!-- Back Button -->
+            <a href="/admin/dashboard" class="btn btn-secondary w-100 mt-3">Back to Dashboard</a>
+        </div>
     </div>
 
-</div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show SweetAlert success message if URL contains success=true
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success') === 'true') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Teacher Added!',
+                    text: 'The teacher was added successfully.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        });
+
+        // Optional: disable submit button after form submit to prevent double submission
+        const form = document.getElementById('addTeacherForm');
+        form.addEventListener('submit', () => {
+            form.querySelector('button[type="submit"]').disabled = true;
+        });
+    </script>
 
 </body>
+
 </html>
