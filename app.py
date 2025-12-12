@@ -231,6 +231,8 @@ def admin_assign_class_page():
     return render_template("assign_class.html")
 
 
+
+
 # ------------------------------------------
 #              ADD PROGRAM
 # ------------------------------------------
@@ -335,6 +337,65 @@ def add_teacher():
 @app.route('/admin/add_teacher', methods=['GET'])
 def show_add_teacher_form():
     return render_template('add_teacher.html')
+
+
+# -------------- ADD STUDENT (GET + POST) ----------------
+@app.route("/teacher/add_student", methods=["GET", "POST"])
+def add_student():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    # --------- GET Programs + Classes for dropdowns ---------
+    cursor.execute("SELECT id, program_name FROM programs")
+    programs = cursor.fetchall()
+
+    cursor.execute("SELECT id, class_name FROM classes")
+    classes = cursor.fetchall()
+
+    # ======================== POST ========================
+    if request.method == "POST":
+        roll_number = request.form["roll_number"]
+        first_name = request.form["first_name"]
+        last_name = request.form.get("last_name")
+        gender = request.form.get("gender")
+        dob = request.form.get("dob")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+        address = request.form.get("address")
+        program_id = request.form["program_id"]
+        class_id = request.form["class_id"]
+        admission_date = request.form.get("admission_date")
+        status = request.form.get("status", "Active")
+
+        # ------------------ VALIDATION ------------------
+        if roll_number == "" or first_name == "":
+            flash(("error", "Roll Number & First Name are required!"))
+            return redirect(url_for("add_student"))
+
+        try:
+            # --------- INSERT INTO DATABASE ---------
+            sql = """
+                INSERT INTO students 
+                (roll_number, first_name, last_name, gender, dob, email, phone, 
+                address, class_id, program_id, admission_date, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+
+            cursor.execute(sql, (
+                roll_number, first_name, last_name, gender, dob, email, phone,
+                address, class_id, program_id, admission_date, status
+            ))
+
+            db.commit()
+            flash(("success", "Student added successfully!"))
+
+        except mysql.connector.Error as err:
+            flash(("error", f"Database error: {err}"))
+
+        return redirect(url_for("add_student"))
+
+    # ======================== GET ========================
+    return render_template("add_student.html", programs=programs, classes=classes)
 
 
 # ------------------------------------------

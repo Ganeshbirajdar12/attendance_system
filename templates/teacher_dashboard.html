@@ -5,27 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Dashboard - SAMS</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='static/css/teacher_dashboard.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/teacher_dashboard.css') }}">
 
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/teacher_dashboard.css') }}">
 </head>
 
 <body>
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2>SAMS</h2>
-        <a href="#" class="active">Dashboard</a>
-        <a href="#" id="addStudentBtn">Add Student</a>
-        <a href="#" id="markAttendanceBtn">Mark Attendance</a>
+        <h2><i class="fa-solid fa-chalkboard-user"></i> SAMS</h2>
+
+        <a href="#" class="active"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+
+        <a href="/teacher/add_student" id="addStudentBtn"><i class="fa-solid fa-user-plus"></i> Add Student</a>
+
+        <a href="#" id="markAttendanceBtn"><i class="fa-solid fa-calendar-check"></i> Mark Attendance</a>
+
+        <h3 class="sidebar-heading">Your Students</h3>
+
         {% for student in students %}
-        <a href="{{ url_for('view_attendance', roll_no=students.roll_no) }}">
-            {{ student.name }} ({{ student.roll }})
+        <a href="{{ url_for('view_attendance', roll_no=students.roll_no) }}" class="student-item">
+            <i class="fa-solid fa-user"></i> {{ student.name }} ({{ student.roll }})
         </a>
         {% endfor %}
 
-
-        <a href="/logout" class="logout">Logout</a>
+        <a href="/logout" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
     </div>
 
     <!-- Main Content -->
@@ -33,27 +41,34 @@
 
         <div class="header">
             <h1>Teacher Dashboard</h1>
-            <p>Welcome, {{ teacher_name }}</p>
+            <p>Welcome, <b>{{ teacher_name }}</b></p>
         </div>
 
-        <div class="content">
+        <div class="stats-container">
 
             <div class="card">
+                <div class="icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
                 <h3>Total Students</h3>
                 <p>{{ total_students }}</p>
             </div>
 
             <div class="card">
+                <div class="icon green">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
                 <h3>Today's Attendance</h3>
                 <p>{{ todays_attendance }} Marked</p>
             </div>
+
         </div>
 
-        <!-- Mark Attendance Section (hidden by default) -->
+        <!-- Attendance Section -->
         <div class="attendance-section" id="attendanceSection">
             <h2>Mark Attendance</h2>
 
-            <table>
+            <table class="attendance-table">
                 <tr>
                     <th>Roll No</th>
                     <th>Name</th>
@@ -74,7 +89,7 @@
                 {% endfor %}
             </table>
 
-            <button class="btn">Submit Attendance</button>
+            <button class="btn submit-btn">Submit Attendance</button>
         </div>
 
     </div>
@@ -94,7 +109,8 @@
         </div>
     </div>
 
-    <script src="/static/js/teacher_dashboard.js"></script>
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='js/teacher_dashboard.js') }}"></script>
 
 </body>
 

@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Attendance Management System</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
@@ -13,34 +14,40 @@
 
     <!-- Navigation Bar -->
     <nav class="navbar">
-        <div class="logo">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" class="main-logo">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" class="main-logo">
+                <span class="logo-title">Attendance System</span>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="/student/auth"><i class="fa-solid fa-user"></i> Student</a></li>
+                <li><a href="/teacher/auth"><i class="fa-solid fa-chalkboard-user"></i> Teacher</a></li>
+                <li><a href="/admin/auth"><i class="fa-solid fa-user-shield"></i> Admin</a></li>
+            </ul>
         </div>
-        <ul class="nav-links">
-            <li><a href="/student/auth">Student auth</a></li>
-            <li><a href="/teacher/auth">Teacher Login</a></li>
-            <li><a href="/admin/auth">Admin Login</a></li>
-        </ul>
-
-
     </nav>
 
-    <header>Student Attendance Management System</header>
+    <!-- Hero / Header -->
+    <header class="hero">
+        <h1>Student Attendance Management System</h1>
+        <p>Smart • Fast • Paperless Attendance Tracking</p>
+    </header>
 
     <!-- About Section -->
     <section class="about">
-        <h2>About the Student Attendance Management System</h2>
-        <p>
-            This system helps schools and colleges manage student attendance digitally.
-            Teachers can easily mark attendance, students can check their records,
-            and admins can monitor overall activity. It reduces paperwork and
-            improves accuracy.
-        </p>
+        <div class="about-content">
+            <h2>About the System</h2>
+            <p>
+                Our digital attendance management system simplifies attendance tracking
+                for schools and colleges. Teachers can quickly mark attendance,
+                students can view their own records, and administrators can monitor
+                institution-wide data—all in one place.
+            </p>
+        </div>
+
         <img src="{{ url_for('static', filename='images/campus.png') }}" class="about-img">
-
     </section>
-
-
 
 </body>
 

@@ -6,36 +6,98 @@
     <title>Admin Dashboard</title>
 
     <!-- Bootstrap 5 -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
         body {
-            background-color: #f4f6f9;
+            background: #eef2ff;
+            font-family: "Poppins", sans-serif;
         }
+
+        /* Sidebar */
         .sidebar {
             height: 100vh;
-            background: #343a40;
-            padding-top: 20px;
-        }
-        .sidebar a {
-            color: #ddd;
-            display: block;
-            padding: 12px 20px;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background: #495057;
+            background: linear-gradient(180deg, #1d1f27, #2c3040);
+            padding-top: 25px;
             color: #fff;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.15);
         }
+
+        .sidebar h4 {
+            font-weight: 600;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar a {
+            color: #cfcfcf;
+            display: block;
+            padding: 12px 22px;
+            font-size: 15px;
+            margin: 6px 0;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .sidebar a i {
+            width: 22px;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            transform: translateX(5px);
+        }
+
         .active-link {
-            background: #0d6efd !important;
+            background: #4c6fff;
             color: #fff !important;
+            box-shadow: 0 5px 12px rgba(76,111,255,0.4);
         }
+
+        /* Main Content */
         .content {
-            padding: 20px;
+            padding: 30px;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(120deg, #4c6fff, #7ea0ff);
+            padding: 25px;
+            border-radius: 18px;
+            color: #fff;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            margin-bottom: 35px;
+        }
+
+        .dashboard-header h2 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 16px;
+            transition: 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.18) !important;
+        }
+
+        .card-body h5 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-body p {
+            font-size: 14px;
+            color: #6c757d;
         }
     </style>
 </head>
@@ -44,76 +106,86 @@
 
 <div class="container-fluid">
     <div class="row">
-        
+
         <!-- Sidebar -->
         <nav class="col-md-2 sidebar">
-            <h4 class="text-center text-light mb-4">Admin Panel</h4>
-            <a href="#" class="active-link">Dashboard</a>
-            <a href="/admin/add_teacher">Add Teachers</a>
-            <a href="/admin/add_program">Add Programs</a>
-            <a href="/admin/add_class">Add Class</a>
-            <a href="/admin/assign_class"> Assign Classes</a>
-            <a href="/admin/logout" class="text-danger">Logout</a>
+            <h4 class="text-center">Admin Panel</h4>
+
+            <a href="#" class="active-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+            <a href="/admin/add_teacher"><i class="fa-solid fa-user-plus"></i> Add Teachers</a>
+            <a href="/admin/add_program"><i class="fa-solid fa-book"></i> Add Programs</a>
+            <a href="/admin/add_class"><i class="fa-solid fa-school"></i> Add Class</a>
+            <a href="/admin/assign_class"><i class="fa-solid fa-users-gear"></i> Assign Classes</a>
+
+            <a href="/admin/logout" class="text-danger mt-3"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </nav>
 
         <!-- Main Content -->
         <main class="col-md-10 content">
 
-            <h2 class="mb-4">Welcome, Admin</h2>
+            <div class="dashboard-header">
+                <h2>Welcome, Admin</h2>
+                <p class="mb-0">Manage teachers, programs, classes and more.</p>
+            </div>
 
             <div class="row">
 
-                <!-- Card 1 -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                <!-- Add Teachers -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm p-2">
                         <div class="card-body text-center">
+                            <i class="fa-solid fa-user-plus fa-2x text-primary mb-3"></i>
                             <h5>Add Teachers</h5>
-                            <p class="text-muted">Create and manage teacher accounts.</p>
-                            <a href="/admin/add_teacher" class="btn btn-primary">Go</a>
+                            <p>Create and manage teacher accounts.</p>
+                            <a href="/admin/add_teacher" class="btn btn-primary rounded-pill">Go</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card 2 -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                <!-- Add Programs -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm p-2">
                         <div class="card-body text-center">
+                            <i class="fa-solid fa-book fa-2x text-primary mb-3"></i>
                             <h5>Add Programs</h5>
-                            <p class="text-muted">Add academic programs/courses.</p>
-                            <a href="/admin/add_program" class="btn btn-primary">Go</a>
+                            <p>Add academic programs/courses.</p>
+                            <a href="/admin/add_program" class="btn btn-primary rounded-pill">Go</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card 3 -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                <!-- Add Class -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm p-2">
                         <div class="card-body text-center">
+                            <i class="fa-solid fa-school fa-2x text-primary mb-3"></i>
                             <h5>Add Class</h5>
-                            <p class="text-muted">Create classes under programs.</p>
-                            <a href="/admin/add_class" class="btn btn-primary">Go</a>
+                            <p>Create classes under programs.</p>
+                            <a href="/admin/add_class" class="btn btn-primary rounded-pill">Go</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card 4 -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                <!-- Assign Classes -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm p-2">
                         <div class="card-body text-center">
+                            <i class="fa-solid fa-users-gear fa-2x text-primary mb-3"></i>
                             <h5>Assign Classes</h5>
-                            <p class="text-muted">assign the classes to the students.</p>
-                            <a href="/admin/assign_class" class="btn btn-primary">Go</a>
+                            <p>Assign the classes to the students.</p>
+                            <a href="/admin/assign_class" class="btn btn-primary rounded-pill">Go</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card 5 -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                <!-- Logout -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm p-2">
                         <div class="card-body text-center">
+                            <i class="fa-solid fa-right-from-bracket fa-2x text-danger mb-3"></i>
                             <h5>Logout</h5>
-                            <p class="text-muted">End your session securely.</p>
-                            <a href="/admin/logout" class="btn btn-danger">Logout</a>
+                            <p>End your session securely.</p>
+                            <a href="/admin/logout" class="btn btn-danger rounded-pill">Logout</a>
                         </div>
                     </div>
                 </div>
