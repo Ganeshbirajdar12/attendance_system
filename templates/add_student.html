@@ -45,7 +45,6 @@
             border-radius: 10px;
             padding: 10px 25px;
             font-weight: 600;
-            transition: 0.3s;
         }
 
         .btn-primary:hover {
@@ -56,145 +55,146 @@
 
 <body>
 
-    <div class="container-box">
+<div class="container-box">
 
-        <h2>Add New Student</h2>
+    <h2>Add New Student</h2>
 
-        <form id="studentForm" action="/teacher/add_student" method="POST">
+    <form id="studentForm" action="/teacher/add_student" method="POST">
 
-            <div class="row">
+        <div class="row">
 
-                <div class="col-md-6">
-                    <label>Roll Number *</label>
-                    <input type="text" name="roll_number" class="form-control" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label>First Name *</label>
-                    <input type="text" name="first_name" class="form-control" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" class="form-control">
-                </div>
-
-                <div class="col-md-6">
-                    <label>Gender</label>
-                    <select name="gender" class="form-control">
-                        <option disabled selected>Select</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>Other</option>
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label>Date of Birth</label>
-                    <input type="date" name="dob" class="form-control">
-                </div>
-
-                <div class="col-md-6">
-                    <label>Email</label>
-                    <input type="email" name="email" class="form-control">
-                </div>
-
-                <div class="col-md-6">
-                    <label>Phone</label>
-                    <input type="text" name="phone" class="form-control">
-                </div>
-
-                <div class="col-md-12">
-                    <label>Address</label>
-                    <textarea name="address" rows="3" class="form-control"></textarea>
-                </div>
-
-                <div class="col-md-6">
-                    <label>Program *</label>
-                    <select name="program_id" class="form-control" required>
-                        <option disabled selected>Select Program</option>
-                        {% for p in programs %}
-                        <option value="{{ p.program_id }}">{{ p.program_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label>Class *</label>
-                    <select name="class_id" class="form-control" required>
-                        <option disabled selected>Select Class</option>
-                        {% for c in classes %}
-                        <option value="{{ c.class_id }}">{{ c.class_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label>Status</label>
-                    <select name="status" class="form-control">
-                        <option>Active</option>
-                        <option>Inactive</option>
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label>Admission Date</label>
-                    <input type="date" name="admission_date" class="form-control">
-                </div>
-
+            <div class="col-md-6">
+                <label>Roll Number *</label>
+                <input type="text" name="roll_number" class="form-control">
             </div>
 
-            <br>
-
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">Add Student</button>
+            <div class="col-md-6">
+                <label>First Name *</label>
+                <input type="text" name="first_name" class="form-control">
             </div>
 
-        </form>
+            <div class="col-md-6">
+                <label>Last Name</label>
+                <input type="text" name="last_name" class="form-control">
+            </div>
 
-    </div>
+            <div class="col-md-6">
+                <label>Gender</label>
+                <select name="gender" class="form-control">
+                    <option value="">Select</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
 
+            <div class="col-md-6">
+                <label>Date of Birth</label>
+                <input type="date" name="dob" class="form-control">
+            </div>
 
-    <!-- ========================== -->
-    <!-- SWEETALERT JS VALIDATION -->
-    <!-- ========================== -->
+            <div class="col-md-6">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control">
+            </div>
 
-    <script>
-        document.getElementById("studentForm").addEventListener("submit", function (e) {
+            <div class="col-md-6">
+                <label>Phone</label>
+                <input type="text" name="phone" class="form-control">
+            </div>
 
-            const roll = document.querySelector("[name='roll_number']").value.trim();
-            const fname = document.querySelector("[name='first_name']").value.trim();
-            const program = document.querySelector("[name='program_id']").value;
-            const class_id = document.querySelector("[name='class_id']").value;
+            <div class="col-md-12">
+                <label>Address</label>
+                <textarea name="address" rows="3" class="form-control"></textarea>
+            </div>
 
-            if (roll === "" || fname === "" || program === "" || class_id === "") {
-                e.preventDefault();
-                Swal.fire({
-                    icon: "error",
-                    title: "Required fields missing",
-                    text: "Roll Number, First Name, Program, and Class are mandatory!"
-                });
-            }
+            <!-- PROGRAM -->
+            <div class="col-md-6">
+                <label>Program *</label>
+                <select name="program_id" class="form-control">
+                    <option value="">Select Program</option>
+                    {% for p in programs %}
+                    <option value="{{ p.id }}">{{ p.program_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- CLASS -->
+            <div class="col-md-6">
+                <label>Class *</label>
+                <select name="class_id" class="form-control">
+                    <option value="">Select Class</option>
+                    {% for c in classes %}
+                    <option value="{{ c.id }}">{{ c.class_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label>Status</label>
+                <select name="status" class="form-control">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label>Admission Date</label>
+                <input type="date" name="admission_date" class="form-control">
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Add Student</button>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- ========================= -->
+<!-- SWEETALERT VALIDATION -->
+<!-- ========================= -->
+
+<script>
+document.getElementById("studentForm").addEventListener("submit", function (e) {
+
+    const roll = document.querySelector("[name='roll_number']").value.trim();
+    const fname = document.querySelector("[name='first_name']").value.trim();
+    const program = document.querySelector("[name='program_id']").value;
+    const class_id = document.querySelector("[name='class_id']").value;
+
+    if (!roll || !fname || !program || !class_id) {
+        e.preventDefault();
+        Swal.fire({
+            icon: "error",
+            title: "Required fields missing",
+            text: "Roll Number, First Name, Program, and Class are mandatory!"
         });
-    </script>
+    }
+});
+</script>
 
+<!-- ========================= -->
+<!-- FLASK FLASH MESSAGE -->
+<!-- ========================= -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<script>
+    
+    Swal.fire({
+    icon: "{{ category }}",
+    title: "{{ message }}",
+    timer: 2500,
+    showConfirmButton: false
+});
 
-    <!-- Flask Flash Messages → SweetAlert -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <script>
-                
-                Swal.fire({
-                    icon: "{{ category }}",
-                    title: "{{ message }}",
-                    timer: 2500,
-                    showConfirmButton: false
-                });
-                
-            </script>
-        {% endif %}
-    {% endwith %}
+</script>
+{% endif %}
+{% endwith %}
 
 </body>
-
 </html>
