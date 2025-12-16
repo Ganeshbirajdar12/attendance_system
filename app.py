@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, flash, url
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevelopmentConfig
+from datetime import date
 
 app = Flask(
     __name__,
@@ -345,7 +346,7 @@ def add_student():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # --------- GET Programs + Classes for dropdowns ---------
+    # --------- GET Programs + Classes ---------
     cursor.execute("SELECT id, program_name FROM programs")
     programs = cursor.fetchall()
 
@@ -354,22 +355,22 @@ def add_student():
 
     # ======================== POST ========================
     if request.method == "POST":
-        roll_number = request.form["roll_number"]
-        first_name = request.form["first_name"]
+        roll_number = request.form.get("roll_number", "").strip()
+        first_name = request.form.get("first_name", "").strip()
         last_name = request.form.get("last_name")
         gender = request.form.get("gender")
         dob = request.form.get("dob")
         email = request.form.get("email")
         phone = request.form.get("phone")
         address = request.form.get("address")
-        program_id = request.form["program_id"]
-        class_id = request.form["class_id"]
+        program_id = request.form.get("program_id", "").strip()
+        class_id = request.form.get("class_id", "").strip()
         admission_date = request.form.get("admission_date")
         status = request.form.get("status", "Active")
 
         # ------------------ VALIDATION ------------------
-        if roll_number == "" or first_name == "":
-            flash(("error", "Roll Number & First Name are required!"))
+        if not roll_number or not first_name or not program_id or not class_id:
+            flash("Roll Number, First Name, Program and Class are required!", "error")
             return redirect(url_for("add_student"))
 
         try:
@@ -377,7 +378,7 @@ def add_student():
             sql = """
                 INSERT INTO students 
                 (roll_number, first_name, last_name, gender, dob, email, phone, 
-                address, class_id, program_id, admission_date, status)
+                 address, class_id, program_id, admission_date, status)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
 
@@ -387,15 +388,96 @@ def add_student():
             ))
 
             db.commit()
-            flash(("success", "Student added successfully!"))
+            flash("Student added successfully!", "success")
 
         except mysql.connector.Error as err:
-            flash(("error", f"Database error: {err}"))
+            flash(f"Database error: {err}", "error")
 
         return redirect(url_for("add_student"))
 
     # ======================== GET ========================
-    return render_template("add_student.html", programs=programs, classes=classes)
+    return render_template(
+        "add_student.html",
+        programs=programs,
+        classes=classes
+    )
+
+# @app.route("/teacher/mark_attendance")
+# def teacher_mark_attendance_page():
+#     if "admin_id" not in session:
+#         return redirect("/teacher/auth")
+#     return render_template("mark_attendance.html")
+
+
+# ========================== MARK TODAY ATTENDANCE =======================================================================
+@app.route("/teacher/mark_attendance", methods=["GET", "POST"])
+def mark_attendance():
+    if "teacher_id" not in session:
+        return redirect("/teacher/auth")
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    today_date = date.today()
+
+    # Load Programs & Classes
+    cursor.execute("SELECT id, program_name FROM programs")
+    programs = cursor.fetchall()
+
+    cursor.execute("SELECT id, class_name FROM classes")
+    classes = cursor.fetchall()
+
+    students = []
+
+    # GET selected program/class
+    program_id = request.args.get("program_id")
+    class_id = request.args.get("class_id")
+
+    if program_id and class_id:
+        cursor.execute("""
+            SELECT student_id, roll_number, first_name, last_name
+            FROM students
+            WHERE program_id = %s AND class_id = %s AND status = 'Active'
+            ORDER BY roll_number
+        """, (program_id, class_id))
+        students = cursor.fetchall()
+
+    # POST attendance
+    if request.method == "POST":
+        try:
+            for key, value in request.form.items():
+                if key.startswith("attendance["):
+                    student_id = key.replace("attendance[", "").replace("]", "")
+                    status = value
+
+                    cursor.execute("""
+                        INSERT INTO attendance (student_id, attendance_date, status)
+                        VALUES (%s, %s, %s)
+                        ON DUPLICATE KEY UPDATE status = VALUES(status)
+                    """, (student_id, today_date, status))
+
+            db.commit()
+            flash("Attendance saved successfully!", "success")
+
+        except Exception as e:
+            db.rollback()
+            flash(f"Error saving attendance: {e}", "error")
+
+        return redirect(url_for("mark_attendance",
+                                program_id=program_id,
+                                class_id=class_id))
+
+    cursor.close()
+    db.close()
+
+    return render_template(
+        "mark_attendance.html",
+        programs=programs,
+        classes=classes,
+        students=students,
+        today_date=today_date.strftime("%d %b %Y")
+    )
+
+
 
 
 # ------------------------------------------

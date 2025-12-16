@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +16,6 @@
             background: #f5f7ff;
             font-family: "Poppins", sans-serif;
         }
-
         .container-box {
             max-width: 900px;
             margin: 40px auto;
@@ -26,19 +24,16 @@
             border-radius: 16px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
         }
-
         h2 {
             text-align: center;
             font-weight: 700;
             color: #3f51b5;
             margin-bottom: 25px;
         }
-
         label {
             font-weight: 600;
             margin-top: 10px;
         }
-
         .btn-primary {
             background: #3f51b5;
             border: none;
@@ -46,7 +41,6 @@
             padding: 10px 25px;
             font-weight: 600;
         }
-
         .btn-primary:hover {
             background: #2c3aa8;
         }
@@ -59,18 +53,19 @@
 
     <h2>Add New Student</h2>
 
-    <form id="studentForm" action="/teacher/add_student" method="POST">
+    <!-- novalidate disables browser popup -->
+    <form id="studentForm" action="/teacher/add_student" method="POST" novalidate>
 
         <div class="row">
 
             <div class="col-md-6">
                 <label>Roll Number *</label>
-                <input type="text" name="roll_number" class="form-control">
+                <input type="text" name="roll_number" class="form-control" required>
             </div>
 
             <div class="col-md-6">
                 <label>First Name *</label>
-                <input type="text" name="first_name" class="form-control">
+                <input type="text" name="first_name" class="form-control" required>
             </div>
 
             <div class="col-md-6">
@@ -111,7 +106,7 @@
             <!-- PROGRAM -->
             <div class="col-md-6">
                 <label>Program *</label>
-                <select name="program_id" class="form-control">
+                <select name="program_id" class="form-control" required>
                     <option value="">Select Program</option>
                     {% for p in programs %}
                     <option value="{{ p.id }}">{{ p.program_name }}</option>
@@ -122,7 +117,7 @@
             <!-- CLASS -->
             <div class="col-md-6">
                 <label>Class *</label>
-                <select name="class_id" class="form-control">
+                <select name="class_id" class="form-control" required>
                     <option value="">Select Class</option>
                     {% for c in classes %}
                     <option value="{{ c.id }}">{{ c.class_name }}</option>
@@ -156,7 +151,7 @@
 </div>
 
 <!-- ========================= -->
-<!-- SWEETALERT VALIDATION -->
+<!-- SWEETALERT FORM VALIDATION -->
 <!-- ========================= -->
 
 <script>
@@ -164,8 +159,8 @@ document.getElementById("studentForm").addEventListener("submit", function (e) {
 
     const roll = document.querySelector("[name='roll_number']").value.trim();
     const fname = document.querySelector("[name='first_name']").value.trim();
-    const program = document.querySelector("[name='program_id']").value;
-    const class_id = document.querySelector("[name='class_id']").value;
+    const program = document.querySelector("[name='program_id']").value.trim();
+    const class_id = document.querySelector("[name='class_id']").value.trim();
 
     if (!roll || !fname || !program || !class_id) {
         e.preventDefault();
@@ -179,21 +174,22 @@ document.getElementById("studentForm").addEventListener("submit", function (e) {
 </script>
 
 <!-- ========================= -->
-<!-- FLASK FLASH MESSAGE -->
+<!-- FLASK FLASH → SWEETALERT -->
 <!-- ========================= -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<script>
-    
-    Swal.fire({
-    icon: "{{ category }}",
-    title: "{{ message }}",
-    timer: 2500,
-    showConfirmButton: false
-});
 
-</script>
-{% endif %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <script>
+        Swal.fire({
+          icon: "{{ category }}",
+          title: "{{ message }}",
+          timer: 2500,
+          showConfirmButton: false
+        });
+      </script>
+    {% endfor %}
+  {% endif %}
 {% endwith %}
 
 </body>

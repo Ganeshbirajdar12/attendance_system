@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mark Attendance - SAMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            background: #f0f2f5;
+            font-family: "Poppins", sans-serif;
+        }
+
+        .container-box {
+            max-width: 1100px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-weight: 700;
+            color: #3f51b5;
+        }
+
+        .attendance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .badge-date {
+            background: #3f51b5;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        table th {
+            background: #e8eaf6;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .form-select {
+            border-radius: 10px;
+        }
+
+        .btn-primary {
+            background: #3f51b5;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 10px 25px;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #2c3aa8;
+        }
+
+        .table-striped>tbody>tr:nth-of-type(odd) {
+            background-color: #f5f6fa;
+        }
+
+        .table thead th {
+            border-bottom: 2px solid #3f51b5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-box">
+
+        <!-- HEADER -->
+        <div class="attendance-header">
+            <h2>Mark Attendance</h2>
+            <span class="badge-date">Today: {{ today_date }}</span>
+        </div>
+
+        <!-- FILTERS -->
+        <form method="GET" class="row g-3 mb-4">
+            <div class="col-md-5">
+                <label class="form-label fw-semibold">Program</label>
+                <select name="program_id" class="form-select">
+                    <option value="">Select Program</option>
+                    {% for p in programs %}
+                    <option value="{{ p.id }}" {% if request.args.get('program_id')==p.id|string %}selected{% endif %}>
+                        {{ p.program_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-5">
+                <label class="form-label fw-semibold">Class</label>
+                <select name="class_id" class="form-select">
+                    <option value="">Select Class</option>
+                    {% for c in classes %}
+                    <option value="{{ c.id }}" {% if request.args.get('class_id')==c.id|string %}selected{% endif %}>
+                        {{ c.class_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-primary w-100">Load Students</button>
+            </div>
+        </form>
+
+        <!-- ATTENDANCE TABLE -->
+        <form id="attendanceForm" method="POST" class="table-responsive">
+            <table class="table table-bordered table-hover table-striped align-middle">
+                <thead class="table-primary">
+                    <tr>
+                        <th>#</th>
+                        <th>Roll No</th>
+                        <th>Student Name</th>
+                        <th>Present</th>
+                        <th>Absent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ s.roll_number }}</td>
+                        <td>{{ s.first_name }} {{ s.last_name }}</td>
+
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="attendance[{{ s.student_id }}]"
+                                    value="Present" checked>
+                                <label class="form-check-label text-success">Present</label>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="attendance[{{ s.student_id }}]"
+                                    value="Absent">
+                                <label class="form-check-label text-danger">Absent</label>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    {% if students|length == 0 %}
+                    <tr>
+                        <td colspan="5" class="text-muted text-center">
+                            Select Program & Class to load students
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <!-- SAVE BUTTON -->
+            {% if students|length > 0 %}
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    Save Attendance
+                </button>
+                <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-outline-secondary ms-2">
+                    <i class="fa fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+            {% endif %}
+
+        </form>
+
+    </div>
+
+    <!-- SWEETALERT CONFIRM -->
+    <script>
+        document.getElementById("attendanceForm")?.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: "Confirm Attendance",
+                text: "Are you sure you want to save today's attendance?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#3f51b5",
+                confirmButtonText: "Yes, Save"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit();
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
