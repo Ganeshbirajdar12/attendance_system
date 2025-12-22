@@ -3,95 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - SAMS</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Student Dashboard</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+        .sidebar {
+            height: 100vh;
+            background: #343a40;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #ddd;
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background: #495057;
+            color: #fff;
+        }
+        .active-link {
+            background: #0d6efd !important;
+            color: #fff !important;
+        }
+        .content {
+            padding: 20px;
+        }
+        .profile-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+        }
+    </style>
 </head>
+
 <body>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>SAMS</h2>
-        <a href="#" class="active">Dashboard</a>
-        <a href="#" action>My Attendance</a>
-        <a href="#">Subjects</a>
-        <a href="#">Notifications</a>
-        <a href="#">Profile</a>
-        <a href="/logout" class="logout">Logout</a>
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar -->
+        <nav class="col-md-2 sidebar">
+            <h4 class="text-center text-light mb-4">Student Panel</h4>
+            <a href="#" class="active-link">Dashboard</a>
+            <a href="/student/profile">My Profile</a>
+            <a href="/student/attendance">View Attendance</a>
+            <a href="/student/result">View Result</a>
+            <a href="/student/logout" class="text-danger">Logout</a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-10 content">
+
+            <h2 class="mb-4">Welcome, {{ student.name }}</h2>
+
+            <!-- Student Profile -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="profile-box shadow-sm">
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                                     width="100" class="mb-2">
+                            </div>
+                            <div class="col-md-9">
+                                <p><b>Roll No:</b> {{ student.roll_no }}</p>
+                                <p><b>Class:</b> {{ student.class }}</p>
+                                <p><b>Program:</b> {{ student.program }}</p>
+                                <p><b>Email:</b> {{ student.email }}</p>
+                                <p><b>Address:</b> {{ student.address }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="row">
+
+                <!-- Card 1 -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5>Attendance</h5>
+                            <p class="text-muted">Check your attendance record.</p>
+                            <a href="/student/attendance" class="btn btn-success">View</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5>Results</h5>
+                            <p class="text-muted">View semester exam results.</p>
+                            <a href="/student/result" class="btn btn-primary">View</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5>Profile</h5>
+                            <p class="text-muted">View or update your profile.</p>
+                            <a href="/student/profile" class="btn btn-secondary">Open</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5>Download Report</h5>
+                            <p class="text-muted">Download result & attendance PDF.</p>
+                            <a href="/student/report/pdf" class="btn btn-warning">Download</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5>Logout</h5>
+                            <p class="text-muted">End your session securely.</p>
+                            <a href="/student/logout" class="btn btn-danger">Logout</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
     </div>
+</div>
 
-    <!-- Main Section -->
-    <div class="main">
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Header -->
-        <div class="header">
-            <h2>Welcome, Student</h2>
-            <div class="user-info">
-                <span>Ganesh</span>
-                <img src="https://via.placeholder.com/40" class="user-pic">
-            </div>
-        </div>
-
-        <!-- Summary Cards -->
-        <div class="cards">
-            <div class="card green">
-                <h3>92%</h3>
-                <p>DBMS Attendance</p>
-            </div>
-            <div class="card orange">
-                <h3>78%</h3>
-                <p>DSA Attendance</p>
-            </div>
-            <div class="card green">
-                <h3>100%</h3>
-                <p>Python Attendance</p>
-            </div>
-            <div class="card red">
-                <h3>65%</h3>
-                <p>Maths Attendance</p>
-            </div>
-        </div>
-
-        <!-- Attendance Chart -->
-        <div class="chart-section">
-            <h3>Attendance Chart</h3>
-            <canvas id="attendanceChart"></canvas>
-        </div>
-
-        <!-- Subjects Table -->
-        <div class="table-section">
-            <h3>Subjects Attendance</h3>
-            <table>
-                <tr>
-                    <th>Subject</th>
-                    <th>Teacher</th>
-                    <th>Attendance %</th>
-                </tr>
-                <tr>
-                    <td>DBMS</td>
-                    <td>Prof. Sharma</td>
-                    <td>92%</td>
-                </tr>
-                <tr>
-                    <td>DSA</td>
-                    <td>Prof. Mehta</td>
-                    <td>78%</td>
-                </tr>
-                <tr>
-                    <td>Python</td>
-                    <td>Prof. Rao</td>
-                    <td>100%</td>
-                </tr>
-                <tr>
-                    <td>Maths</td>
-                    <td>Prof. Patel</td>
-                    <td>65%</td>
-                </tr>
-            </table>
-        </div>
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/static/js/script.js"></script>
 </body>
 </html>

@@ -33,58 +33,40 @@ def index():
 # ------------------------------------------
 #          STUDENT AUTHENTICATION
 # ------------------------------------------
-@app.route("/student/auth")
-def student_auth_page():
-    return render_template("student_auth.html")
 
-
-@app.route("/student/register", methods=["POST"])
-def student_register():
-    username = request.form.get("username")
-    email = request.form.get("email")
-    password = request.form.get("password")
-    confirm_password = request.form.get("confirm_password")
-
-    if password != confirm_password:
-        return render_template("student_auth.html", register_error="Passwords do not match")
-
-    hashed_password = generate_password_hash(password)
-
-    db = get_db_connection()
-    cursor = db.cursor()
-    try:
-        cursor.execute(
-            "INSERT INTO student_auth (username, email, password) VALUES (%s, %s, %s)",
-            (username, email, hashed_password)
-        )
-        db.commit()
-    except mysql.connector.IntegrityError:
-        cursor.close()
-        db.close()
-        return render_template("student_auth.html", register_error="Username or email already taken")
-
-    cursor.close()
-    db.close()
-    return render_template("student_auth.html", register_success="Registration successful! Please log in.")
-
-
-@app.route("/student/login", methods=["POST"])
+@app.route('/student/auth', methods=['GET', 'POST'])
 def student_login():
-    username = request.form.get("username")
-    password = request.form.get("password")
+    if request.method == 'POST':
+        roll_no = request.form.get('roll_no')
+        password = request.form.get('password')
 
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM student_auth WHERE username=%s", (username,))
-    student = cursor.fetchone()
-    cursor.close()
-    db.close()
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
 
-    if student and check_password_hash(student["password"], password):
-        session["student_id"] = student["id"]
-        return redirect("/student/dashboard")
+        query = """
+            SELECT student_id, roll_number, password, status
+            FROM students
+            WHERE roll_number = %s AND status = 'Active'
+        """
+        cursor.execute(query, (roll_no,))
+        student = cursor.fetchone()
 
-    return render_template("student_auth.html", login_error="Invalid username or password")
+        cursor.close()
+        conn.close()
+
+        # Plain-text check (temporary)
+        if student and student['password'] == password:
+            session['student_id'] = student['student_id']
+            session['roll_number'] = student['roll_number']
+            session['role'] = 'student'
+            return redirect("/student/dashboard")
+        else:
+            return render_template(
+                'student_auth.html',
+                login_error="Invalid Roll Number or Password"
+            )
+
+    return render_template('student_auth.html')
 
 
 # ------------------------------------------
@@ -180,11 +162,6 @@ def admin_login():
 # ------------------------------------------
 #                DASHBOARDS
 # ------------------------------------------
-@app.route("/student/dashboard")
-def student_dashboard():
-    if 'student_id' not in session:
-        return redirect("/student/auth")
-    return render_template("student_dashboard.html")
 
 @app.route("/teacher/dashboard")
 def teacher_dashboard():
