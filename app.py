@@ -162,6 +162,43 @@ def admin_login():
 # ------------------------------------------
 #                DASHBOARDS
 # ------------------------------------------
+@app.route("/student/dashboard")
+def student_dashboard():
+    # Check if student is logged in
+    if 'student_id' not in session:
+        return redirect(url_for('student_login'))
+
+    student_id = session['student_id']
+
+    # Connect to DB
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch student details along with class and program names
+    query = """
+        SELECT s.student_id, s.roll_number AS roll_no, s.first_name, s.last_name,
+               s.email, s.address,
+               c.class_name AS class,
+               p.program_name AS program
+        FROM students s
+        LEFT JOIN classes c ON s.class_id = c.id
+        LEFT JOIN programs p ON s.program_id = p.id
+        WHERE s.student_id = %s
+    """
+    cursor.execute(query, (student_id,))
+    student = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not student:
+        flash("Student not found!", "error")
+        return redirect(url_for('student_login'))
+
+    # Combine first and last name for display 
+    student['name'] = f"{student['first_name']} {student['last_name'] or ''}".strip()
+
+    return render_template("student_dashboard.html", student=student)
 
 @app.route("/teacher/dashboard")
 def teacher_dashboard():
