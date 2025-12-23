@@ -222,6 +222,18 @@ def admin_logout():
     return redirect("/")
 
 
+@app.route("/student/logout")
+def student_logout():
+    session.pop("roll_number", None)
+    return redirect("/")
+
+@app.route("/teacher/logout")
+def teacher_logout():
+    session.pop("teacher_id", None)
+    return redirect("/")
+
+
+
 # ------------------------------------------
 #      ADMIN STATIC FORM PAGES
 # ------------------------------------------
