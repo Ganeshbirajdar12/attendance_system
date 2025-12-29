@@ -3,6 +3,11 @@ import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevelopmentConfig
 from datetime import date
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from flask import send_file
+from io import BytesIO
+from datetime import datetime
 
 app = Flask(
     __name__,
@@ -504,6 +509,127 @@ def mark_attendance():
     )
 
 
+@app.route("/student/view/attendance")
+def attendance_report():
+
+    if "student_id" not in session:
+        return redirect(url_for("student_login"))
+
+    student_id = session["student_id"]
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch student details (MATCH YOUR STUDENTS TABLE)
+    cursor.execute("""
+        SELECT 
+            s.student_id,
+            s.roll_number AS roll_no,
+            CONCAT(s.first_name, ' ', IFNULL(s.last_name, '')) AS name,
+            p.program_name AS program
+        FROM students s
+        LEFT JOIN programs p ON s.program_id = p.id
+        WHERE s.student_id = %s
+    """, (student_id,))
+    student = cursor.fetchone()
+
+    # Fetch attendance
+    cursor.execute("""
+        SELECT attendance_date, status
+        FROM attendance
+        WHERE student_id = %s
+        ORDER BY attendance_date DESC
+    """, (student_id,))
+    attendance = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "attendance.html",
+        student=student,
+        attendance=attendance
+    )
+
+@app.route("/student/attendance/pdf")
+def download_attendance_pdf():
+    if "student_id" not in session:
+        return redirect(url_for("student_login"))
+
+    student_id = session["student_id"]
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch student details
+    cursor.execute("""
+        SELECT 
+            CONCAT(first_name, ' ', IFNULL(last_name,'')) AS name,
+            roll_number
+        FROM students
+        WHERE student_id = %s
+    """, (student_id,))
+    student = cursor.fetchone()
+
+    # Fetch attendance
+    cursor.execute("""
+        SELECT 
+            DATE_FORMAT(attendance_date, '%d-%m-%Y') AS attendance_date,
+            status
+        FROM attendance
+        WHERE student_id = %s
+        ORDER BY attendance_date
+    """, (student_id,))
+    attendance = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    # -------- PDF GENERATION --------
+  
+
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    y = height - 50
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawCentredString(width / 2, y, "Attendance Report")
+
+    y -= 40
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(50, y, f"Name: {student['name']}")
+    y -= 20
+    pdf.drawString(50, y, f"Roll No: {student['roll_number']}")
+    y -= 20
+    pdf.drawString(50, y, f"Generated On: {datetime.now().strftime('%d-%m-%Y')}")
+    y -= 30
+
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(50, y, "Date")
+    pdf.drawString(200, y, "Status")
+    y -= 15
+    pdf.line(50, y, 400, y)
+    y -= 20
+
+    pdf.setFont("Helvetica", 11)
+    for row in attendance:
+        if y < 50:
+            pdf.showPage()
+            y = height - 50
+        pdf.drawString(50, y, row["attendance_date"])
+        pdf.drawString(200, y, row["status"])
+        y -= 20
+
+    pdf.save()
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name="attendance_report.pdf",
+        mimetype="application/pdf"
+    )
 
 
 # ------------------------------------------
