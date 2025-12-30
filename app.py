@@ -508,7 +508,9 @@ def mark_attendance():
         today_date=today_date.strftime("%d %b %Y")
     )
 
-
+# ------------------------------------------
+#         view attendance
+# ------------------------------------------
 @app.route("/student/view/attendance")
 def attendance_report():
 
@@ -550,6 +552,10 @@ def attendance_report():
         student=student,
         attendance=attendance
     )
+
+# ------------------------------------------
+#          pdf download
+# ------------------------------------------
 
 @app.route("/student/attendance/pdf")
 def download_attendance_pdf():
@@ -631,6 +637,40 @@ def download_attendance_pdf():
         mimetype="application/pdf"
     )
 
+@app.route("/student/profile")
+def student_profile():
+    if "student_id" not in session:
+        return redirect(url_for("student_login"))
+
+    student_id = session["student_id"]
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            s.roll_number,
+            CONCAT(s.first_name, ' ', IFNULL(s.last_name,'')) AS name,
+            s.gender,
+            s.dob,
+            s.email,
+            s.phone,
+            s.address,
+            c.class_name,
+            p.program_name,
+            s.admission_date,
+            s.status
+        FROM students s
+        LEFT JOIN classes c ON s.class_id = c.id
+        LEFT JOIN programs p ON s.program_id = p.id
+        WHERE s.student_id = %s
+    """, (student_id,))
+
+    student = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    return render_template("profile.html", student=student)
 
 # ------------------------------------------
 #                RUN APP
