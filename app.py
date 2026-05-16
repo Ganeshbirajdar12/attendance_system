@@ -90,7 +90,7 @@ def teacher_login():
 
         db = get_db_connection()
         cursor = db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM Teachers WHERE username = %s", (username,))
+        cursor.execute("SELECT * FROM teachers WHERE username = %s", (username,))
         teacher = cursor.fetchone()
         cursor.close()
         db.close()
@@ -281,7 +281,7 @@ def add_program():
     cursor = db.cursor()
 
     cursor.execute("""
-        INSERT INTO Programs (program_name, program_code, duration, department, description)
+        INSERT INTO programs (program_name, program_code, duration, department, description)
         VALUES (%s, %s, %s, %s, %s)
     """, (program_name, program_code, duration, department, description))
 
@@ -303,10 +303,10 @@ def show_add_class_form():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT program_name FROM Programs")
+    cursor.execute("SELECT program_name FROM programs")
     programs = cursor.fetchall()
 
-    cursor.execute("SELECT name FROM Teachers")
+    cursor.execute("SELECT name FROM teachers")
     teachers = cursor.fetchall()
 
     cursor.close()
@@ -328,7 +328,7 @@ def add_class():
     cursor = db.cursor()
 
     cursor.execute("""
-        INSERT INTO Classes (class_name, program, year, teacher, division, description)
+        INSERT INTO classes (class_name, program, year, teacher, division, description)
         VALUES (%s, %s, %s, %s, %s, %s)
     """, (class_name, program, year, teacher, division, description))
 
@@ -356,7 +356,7 @@ def add_teacher():
     cursor = db.cursor()
 
     cursor.execute("""
-        INSERT INTO Teachers (name, email, phone, username, password)
+        INSERT INTO teachers (name, email, phone, username, password)
         VALUES (%s, %s, %s, %s, %s)
     """, (name, email, phone, username, hashed_password))
 
