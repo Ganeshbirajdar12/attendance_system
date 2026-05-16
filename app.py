@@ -22,11 +22,11 @@ app.secret_key = "your_secret_key"
 # ---------- DATABASE CONNECTION ----------
 def get_db_connection():
     return mysql.connector.connect(
-        host=os.getenv("localhost"),
+        host=os.getenv("autorack.proxy.rlwy.net"),
         user=os.getenv("root"),
-        password=os.getenv("root123"),
+        password=os.getenv("kFWNsZOFmAWEaRvypfHORdgISBYmcvcL"),
         database=os.getenv("attendance_system1"),
-        port=3306
+        port=int(os.getenv("21721"))
     )
 # ------------------------------------------
 #                 INDEX
