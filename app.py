@@ -235,7 +235,7 @@ def student_logout():
 
 @app.route("/teacher/logout")
 def teacher_logout():
-    session.pop("teacher_id", None)
+    session.pop("id", None)
     return redirect("/")
 
 
@@ -256,13 +256,65 @@ def admin_add_program_page():
         return redirect("/admin/auth")
     return render_template("add_program.html")
 
-
-@app.route("/admin/assign_class")
+@app.route("/admin/assign_class", methods=["GET", "POST"])
 def admin_assign_class_page():
     if "admin_id" not in session:
         return redirect("/admin/auth")
-    return render_template("assign_class.html")
 
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    if request.method == "POST":
+        teacher_id = request.form.get("teacher_id")
+        program_id = request.form.get("program_id")
+        class_id = request.form.get("class_id")
+
+        if not teacher_id or not program_id or not class_id:
+            flash("Teacher, Program and Class are required.", "error")
+            return redirect(url_for("admin_assign_class_page"))
+
+        cursor.execute("SELECT name FROM teachers WHERE id = %s", (teacher_id,))
+        teacher = cursor.fetchone()
+
+        cursor.execute("SELECT program_name FROM programs WHERE id = %s", (program_id,))
+        program = cursor.fetchone()
+
+        if not teacher or not program:
+            flash("Invalid teacher or program selected.", "error")
+            cursor.close()
+            db.close()
+            return redirect(url_for("admin_assign_class_page"))
+
+        cursor.execute("""
+            UPDATE classes
+            SET teacher = %s, program = %s
+            WHERE id = %s
+        """, (teacher["name"], program["program_name"], class_id))
+        db.commit()
+
+        flash("Class assigned successfully.", "success")
+        cursor.close()
+        db.close()
+        return redirect(url_for("admin_assign_class_page"))
+
+    cursor.execute("SELECT id, name FROM teachers")
+    teachers = cursor.fetchall()
+
+    cursor.execute("SELECT id, program_name FROM programs")
+    programs = cursor.fetchall()
+
+    cursor.execute("SELECT id, class_name FROM classes")
+    classes = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return render_template(
+        "assign_class.html",
+        teachers=teachers,
+        programs=programs,
+        classes=classes
+    )
 
 
 
