@@ -3,6 +3,7 @@ import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevelopmentConfig
 from datetime import date
+import os
 # from reportlab.lib.pagesizes import A4
 # from reportlab.pdfgen import canvas
 from flask import send_file
@@ -21,12 +22,12 @@ app.secret_key = "your_secret_key"
 # ---------- DATABASE CONNECTION ----------
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="root123",
-        database="attendance_system1"
+        host=os.getenv("localhost"),
+        user=os.getenv("root"),
+        password=os.getenv("root123"),
+        database=os.getenv("attendance_system1"),
+        port=3306
     )
-
 # ------------------------------------------
 #                 INDEX
 # ------------------------------------------
