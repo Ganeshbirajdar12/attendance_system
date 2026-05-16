@@ -393,12 +393,15 @@ def add_student():
         gender = request.form.get("gender")
         dob = request.form.get("dob")
         email = request.form.get("email")
+        password = request.form.get("password")
         phone = request.form.get("phone")
         address = request.form.get("address")
         program_id = request.form.get("program_id", "").strip()
         class_id = request.form.get("class_id", "").strip()
         admission_date = request.form.get("admission_date")
         status = request.form.get("status", "Active")
+
+        hashed_password = generate_password_hash(password)
 
         # ------------------ VALIDATION ------------------
         if not roll_number or not first_name or not program_id or not class_id:
@@ -410,8 +413,8 @@ def add_student():
             sql = """
                 INSERT INTO students 
                 (roll_number, first_name, last_name, gender, dob, email, phone, 
-                 address, class_id, program_id, admission_date, status)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 address, class_id, program_id, admission_date, status, hash_password)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
 
             cursor.execute(sql, (

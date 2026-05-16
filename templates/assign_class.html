@@ -47,8 +47,9 @@
                         <option value="{{ t.id }}">{{ t.name }}</option>
                     {% endfor %}
                     -->
-                    <option value="1">John Doe</option>
-                    <option value="2">Priya Sharma</option>
+                    {% for t in teachers %}
+                        <option value="{{ t.id }}">{{ t.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
@@ -65,8 +66,9 @@
                     {% endfor %}
                     -->
 
-                    <option value="101">BCA</option>
-                    <option value="102">BSc-CS</option>
+                    {% for p in programs %}
+                        <option value="{{ p.id }}">{{ p.program_name }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
@@ -83,9 +85,9 @@
                     {% endfor %}
                     -->
 
-                    <option value="201">FY-BCA</option>
-                    <option value="202">SY-BCA</option>
-                    <option value="203">TY-BCA</option>
+                    {% for c in classes %}
+                        <option value="{{ c.id }}">{{ c.class_name }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
