@@ -3,8 +3,8 @@ import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import DevelopmentConfig
 from datetime import date
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
+# from reportlab.lib.pagesizes import A4
+# from reportlab.pdfgen import canvas
 from flask import send_file
 from io import BytesIO
 from datetime import datetime
@@ -594,48 +594,48 @@ def download_attendance_pdf():
     # -------- PDF GENERATION --------
   
 
-    buffer = BytesIO()
-    pdf = canvas.Canvas(buffer, pagesize=A4)
-    width, height = A4
+    # buffer = BytesIO()
+    # pdf = canvas.Canvas(buffer, pagesize=A4)
+    # width, height = A4
 
-    y = height - 50
-    pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawCentredString(width / 2, y, "Attendance Report")
+    # y = height - 50
+    # pdf.setFont("Helvetica-Bold", 16)
+    # pdf.drawCentredString(width / 2, y, "Attendance Report")
 
-    y -= 40
-    pdf.setFont("Helvetica", 11)
-    pdf.drawString(50, y, f"Name: {student['name']}")
-    y -= 20
-    pdf.drawString(50, y, f"Roll No: {student['roll_number']}")
-    y -= 20
-    pdf.drawString(50, y, f"Generated On: {datetime.now().strftime('%d-%m-%Y')}")
-    y -= 30
+    # y -= 40
+    # pdf.setFont("Helvetica", 11)
+    # pdf.drawString(50, y, f"Name: {student['name']}")
+    # y -= 20
+    # pdf.drawString(50, y, f"Roll No: {student['roll_number']}")
+    # y -= 20
+    # pdf.drawString(50, y, f"Generated On: {datetime.now().strftime('%d-%m-%Y')}")
+    # y -= 30
 
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(50, y, "Date")
-    pdf.drawString(200, y, "Status")
-    y -= 15
-    pdf.line(50, y, 400, y)
-    y -= 20
+    # pdf.setFont("Helvetica-Bold", 12)
+    # pdf.drawString(50, y, "Date")
+    # pdf.drawString(200, y, "Status")
+    # y -= 15
+    # pdf.line(50, y, 400, y)
+    # y -= 20
 
-    pdf.setFont("Helvetica", 11)
-    for row in attendance:
-        if y < 50:
-            pdf.showPage()
-            y = height - 50
-        pdf.drawString(50, y, row["attendance_date"])
-        pdf.drawString(200, y, row["status"])
-        y -= 20
+    # pdf.setFont("Helvetica", 11)
+    # for row in attendance:
+    #     if y < 50:
+    #         pdf.showPage()
+    #         y = height - 50
+    #     pdf.drawString(50, y, row["attendance_date"])
+    #     pdf.drawString(200, y, row["status"])
+    #     y -= 20
 
-    pdf.save()
-    buffer.seek(0)
+    # pdf.save()
+    # buffer.seek(0)
 
-    return send_file(
-        buffer,
-        as_attachment=True,
-        download_name="attendance_report.pdf",
-        mimetype="application/pdf"
-    )
+    # return send_file(
+    #     buffer,
+    #     as_attachment=True,
+    #     download_name="attendance_report.pdf",
+    #     mimetype="application/pdf"
+    # )
 
 @app.route("/student/profile")
 def student_profile():
