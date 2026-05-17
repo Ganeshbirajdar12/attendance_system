@@ -5,6 +5,7 @@ from config import DevelopmentConfig
 from datetime import date, datetime
 from flask import send_file
 from io import BytesIO
+from urllib.parse import urlparse
 import os
 
 app = Flask(
@@ -23,13 +24,15 @@ app.secret_key = os.getenv("SECRET_KEY", "fallback_secret_key")
 #                    DATABASE CONNECTION
 # =========================================================
 def get_db_connection():
+    url = urlparse(os.getenv("DATABASE_URL"))
+
     return mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME"),
-        port=int(os.getenv("DB_PORT")),
-        connection_timeout=10,
+        host=url.hostname,
+        user=url.username,
+        password=url.password,
+        database=url.path[1:],
+        port=url.port,
+        connection_timeout=30,
         autocommit=True
     )
 
