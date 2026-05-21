@@ -514,6 +514,152 @@ def add_student():
 
 
 # =========================================================
+#                       ADD PROGRAM
+# =========================================================
+@app.route("/admin/add_program", methods=["GET", "POST"])
+def add_program():  
+
+    if "admin_id" not in session:
+        return redirect("/admin/auth")
+
+    db = None
+    cursor = None
+
+    try:
+        db = get_db_connection()
+        cursor = db.cursor()
+
+        if request.method == "POST":
+
+            program_name = request.form.get("program_name").strip()
+
+            cursor.execute("""
+                INSERT INTO programs (program_name)
+                VALUES (%s)
+            """, (program_name,))
+
+            db.commit()
+
+            flash("Program added successfully!", "success")
+
+            return redirect(url_for("add_program"))
+
+        return render_template("add_program.html")
+
+    finally:
+        if cursor:
+            cursor.close()
+        if db:
+            db.close()
+
+
+
+# =========================================================
+#                       ADD ClASS
+# =========================================================
+@app.route("/admin/add_class", methods=["GET", "POST"])
+def add_class():
+
+    if "admin_id" not in session:
+        return redirect("/admin/auth")
+
+    db = None
+    cursor = None
+
+    try:
+        db = get_db_connection()
+        cursor = db.cursor()
+
+        if request.method == "POST":
+
+            class_name = request.form.get("class_name").strip()
+
+            cursor.execute("""
+                INSERT INTO classes (class_name)
+                VALUES (%s)
+            """, (class_name,))
+
+            db.commit()
+
+            flash("Class added successfully!", "success")
+
+            return redirect(url_for("add_class"))
+
+        return render_template("add_class.html")
+
+    finally:
+        if cursor:
+            cursor.close()
+        if db:
+            db.close()
+
+
+
+# =========================================================
+#                      Assign Class
+# =========================================================
+@app.route("/admin/assign_class", methods=["GET", "POST"])
+def admin_assign_class_page():
+    if "admin_id" not in session:
+        return redirect("/admin/auth")
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    if request.method == "POST":
+        teacher_id = request.form.get("teacher_id")
+        program_id = request.form.get("program_id")
+        class_id = request.form.get("class_id")
+
+        if not teacher_id or not program_id or not class_id:
+            flash("Teacher, Program and Class are required.", "error")
+            return redirect(url_for("admin_assign_class_page"))
+
+        cursor.execute("SELECT name FROM teachers WHERE id = %s", (teacher_id,))
+        teacher = cursor.fetchone()
+
+        cursor.execute("SELECT program_name FROM programs WHERE id = %s", (program_id,))
+        program = cursor.fetchone()
+
+        if not teacher or not program:
+            flash("Invalid teacher or program selected.", "error")
+            cursor.close()
+            db.close()
+            return redirect(url_for("admin_assign_class_page"))
+
+        cursor.execute("""
+            UPDATE classes
+            SET teacher = %s, program = %s
+            WHERE id = %s
+        """, (teacher["name"], program["program_name"], class_id))
+        db.commit()
+
+        flash("Class assigned successfully.", "success")
+        cursor.close()
+        db.close()
+        return redirect(url_for("admin_assign_class_page"))
+
+    cursor.execute("SELECT id, name FROM teachers")
+    teachers = cursor.fetchall()
+
+    cursor.execute("SELECT id, program_name FROM programs")
+    programs = cursor.fetchall()
+
+    cursor.execute("SELECT id, class_name FROM classes")
+    classes = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return render_template(
+        "assign_class.html",
+        teachers=teachers,
+        programs=programs,
+        classes=classes
+    )
+
+
+# =========================================================
 #                   MARK ATTENDANCE
 # =========================================================
 @app.route("/teacher/mark_attendance", methods=["GET", "POST"])
